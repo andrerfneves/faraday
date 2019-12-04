@@ -5,8 +5,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/davecgh/go-spew/spew"
+
 	"github.com/lightninglabs/loop/lndclient"
-	"github.com/lightningnetwork/lnd/lnrpc"
 )
 
 // Main is the real entry point for terminator. It is required to ensure that
@@ -32,13 +33,13 @@ func Main() error {
 		return fmt.Errorf("cannot connect to lightning client: %v", err)
 	}
 
-	channels, err := client.ListChannels(ctx, &lnrpc.ListChannelsRequest{})
+	// Query for report over relevant period.
+	report, err := getRPCRevenue(ctx, client)
 	if err != nil {
-		return fmt.Errorf("error calling list channels: %v", err)
+		return err
 	}
 
-	log.Infof("Found %v channels, that's all for now. I will be back.",
-		len(channels.Channels))
+	spew.Dump(report)
 
 	return nil
 }
