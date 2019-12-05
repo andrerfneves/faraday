@@ -2,6 +2,7 @@ package terminator
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/jessevdk/go-flags"
 )
@@ -11,6 +12,7 @@ const (
 	defaultRPCHostPort = "localhost:" + defaultRPCPort
 	defaultMacaroon    = "admin.macaroon"
 	defaultNetwork     = "mainnet"
+	defaultMinimumAge  = time.Hour * 24 * 7 * 4 // four weeks in hours
 )
 
 type config struct {
@@ -35,6 +37,9 @@ type config struct {
 	// Simnet is set to true when using bitcoind's regtest.
 	Regtest bool `long:"regtest" description:"Use regtest"`
 
+	// MinimumAge is the minimum amount of time that a channel must be monitored for before we consider it for termination.
+	MinimumAge time.Duration `long:"minimumage" description:"The minimum amount of time that a channel must be monitored for before recommending termination. Valid time units are {s, m, h}."`
+
 	// network is a string containing the network we're running on.
 	network string
 }
@@ -49,6 +54,7 @@ func loadConfig() (*config, error) {
 		RPCServer:    defaultRPCHostPort,
 		network:      defaultNetwork,
 		MacaroonFile: defaultMacaroon,
+		MinimumAge:   defaultMinimumAge,
 	}
 
 	// Parse command line options to obtain user specified values.
